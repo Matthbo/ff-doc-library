@@ -1,0 +1,17 @@
+{
+  "name": "%PROJECT_NAME%",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "author": "",
+  "license": "Apache-2.0",
+  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": "",
+    "directory": "projects/%PROJECT_NAME%"
+  },
+  "peerDependencies": {
+    "@angular/core": "^19.0.0"
+  }
+}

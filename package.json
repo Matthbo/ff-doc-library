@@ -1,0 +1,52 @@
+{
+  "name": "angular-library-playground",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng build angular-components && ng serve",
+    "serve": "ng serve",
+    "build": "ng build %PROJECT_NAME%",
+    "watch": "ng build angular-components --watch --configuration development",
+    "test": "ng test"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^19.1.1",
+    "@angular/common": "^19.1.1",
+    "@angular/compiler": "^19.1.1",
+    "@angular/core": "^19.1.1",
+    "@angular/forms": "^19.1.1",
+    "@angular/platform-browser": "^19.1.1",
+    "@angular/platform-browser-dynamic": "^19.1.1",
+    "@angular/router": "^19.1.1",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.7.0",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^19.1.1",
+    "@angular-eslint/builder": "^19.0.2",
+    "@angular-eslint/eslint-plugin": "^19.0.2",
+    "@angular-eslint/eslint-plugin-template": "^19.0.2",
+    "@angular-eslint/schematics": "^19.0.2",
+    "@angular-eslint/template-parser": "^19.0.2",
+    "@angular/cli": "^19.1.1",
+    "@angular/compiler-cli": "^19.1.1",
+    "@types/jasmine": "~5.1.0",
+    "@typescript-eslint/eslint-plugin": "^8.7.0",
+    "@typescript-eslint/parser": "^8.7.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-unicorn": "^55.0.0",
+    "jasmine-core": "^5.3.0",
+    "karma": "^6.4.4",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "ng-packagr": "^19.1.0",
+    "prettier": "^3.2.5",
+    "typescript": "~5.6.x"
+  }
+}
