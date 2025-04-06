@@ -5,7 +5,7 @@ module.exports = {
     {
       files: ['*.ts'],
       parserOptions: {
-        project: ['tsconfig.app.json', 'tsconfig.spec.json', 'projects/PROJECT_NAME/tsconfig.lib.json'],
+        project: ['tsconfig.app.json', 'tsconfig.spec.json', 'projects/ff-doc/tsconfig.lib.json'],
         tsconfigRootDir: __dirname,
         createDefaultProgram: true,
         sourceType: 'module',

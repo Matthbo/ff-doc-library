@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-// import { LibraryModule } from '%PROJECT_NAME%';
+// import { LibraryModule } from 'ff-doc';
 
 @Component({
   selector: 'app-root',

@@ -1,3 +1,7 @@
+# FF Doc Library
+
+See [FF Doc readme](./projects/ff-doc/README.md)
+<!--
 # Angular Library Template
 
 A template repository for Angular libraries
@@ -5,7 +9,7 @@ A template repository for Angular libraries
 ![frank-framework-github-banner](banner.png)
 
 ## How to use
-Find and replace all `%PROJECT_NAME%` with your project name, you should also rename the `/projects/PROJECT_NAME` folder and update `.eslintrc.js > parserOptions > project` property accordingly.
+Find and replace all `ff-doc` with your project name, you should also rename the `/projects/PROJECT_NAME` folder and update `.eslintrc.js > parserOptions > project` property accordingly.
 
 > [!IMPORTANT]
 > Make sure to update angular to the latest version
@@ -31,7 +35,8 @@ Run `npm start` to build the library project first and then serve the testing pr
 Run `npm run watch` to build the library on every change. Then in a new terminal run `npm start` to serve the testing project.
 
 ### Build
-Run `npm run build` to build the library project using ng-packagr. The build artifacts will be stored in the `dist/%PROJECT_NAME%/` directory.
+Run `npm run build` to build the library project using ng-packagr. The build artifacts will be stored in the `dist/ff-doc/` directory.
 
 ### Publishing
-Run `npm publish` in the `dist/%PROJECT_NAME%/` directory in order to publish the library to a package registry.
+Run `npm publish` in the `dist/ff-doc/` directory in order to publish the library to a package registry.
+-->

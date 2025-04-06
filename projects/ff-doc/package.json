@@ -1,5 +1,5 @@
 {
-  "name": "%PROJECT_NAME%",
+  "name": "@frankframework/ff-doc",
   "version": "1.0.0",
   "description": "",
   "main": "",
@@ -9,7 +9,7 @@
   "repository": {
     "type": "git",
     "url": "",
-    "directory": "projects/%PROJECT_NAME%"
+    "directory": "projects/ff-doc"
   },
   "peerDependencies": {
     "@angular/core": "^19.0.0"

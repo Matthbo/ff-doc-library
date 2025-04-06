@@ -23,8 +23,8 @@
       "dom"
     ],
     "paths": {
-      "%PROJECT_NAME%": [
-        "./dist/%PROJECT_NAME%"
+      "ff-doc": [
+        "./dist/ff-doc"
       ]
     }
   },

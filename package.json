@@ -5,7 +5,7 @@
     "ng": "ng",
     "start": "ng build angular-components && ng serve",
     "serve": "ng serve",
-    "build": "ng build %PROJECT_NAME%",
+    "build": "ng build ff-doc",
     "watch": "ng build angular-components --watch --configuration development",
     "test": "ng test"
   },
@@ -48,5 +48,6 @@
     "ng-packagr": "^19.1.0",
     "prettier": "^3.2.5",
     "typescript": "~5.6.x"
-  }
+  },
+  "packageManager": "pnpm@9.14.4+sha512.c8180b3fbe4e4bca02c94234717896b5529740a6cbadf19fa78254270403ea2f27d4e1d46a08a0f56c89b63dc8ebfd3ee53326da720273794e6200fcf0d184ab"
 }

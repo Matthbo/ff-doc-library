@@ -97,11 +97,11 @@
         }
       }
     },
-    "%PROJECT_NAME%": {
+    "ff-doc": {
       "projectType": "library",
-      "root": "projects/%PROJECT_NAME%",
-      "sourceRoot": "projects/%PROJECT_NAME%/src",
-      "prefix": "%PROJECT_NAME%",
+      "root": "projects/ff-doc",
+      "sourceRoot": "projects/ff-doc/src",
+      "prefix": "ff-doc",
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
@@ -111,7 +111,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
-            "project": "projects/%PROJECT_NAME%/ng-package.json"
+            "project": "projects/ff-doc/ng-package.json"
           }
         }
       }
