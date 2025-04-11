@@ -99,7 +99,7 @@ export default [
   eslintPluginUnicorn.configs.recommended,
   {
     rules: {
-      'unicorn/prevent-abbreviations': 'warn',
+      'unicorn/prevent-abbreviations': 'off',
       'unicorn/no-array-reduce': 'off',
       'unicorn/prefer-ternary': 'warn',
       'unicorn/no-null': 'off',

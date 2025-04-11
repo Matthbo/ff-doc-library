@@ -3,11 +3,12 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng build angular-components && ng serve",
+    "start": "ng build ff-doc && ng serve",
     "serve": "ng serve",
     "build": "ng build ff-doc",
-    "watch": "ng build angular-components --watch --configuration development",
-    "test": "ng test"
+    "watch": "ng build ff-doc --watch --configuration development",
+    "test": "ng test %PROJECT_NAME%",
+    "test:playground": "ng test angular-library-playground"
   },
   "private": true,
   "dependencies": {
