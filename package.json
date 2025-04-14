@@ -6,7 +6,7 @@
     "start": "ng build ff-doc && ng serve",
     "serve": "ng serve",
     "build": "ng build ff-doc",
-    "watch": "ng build ff-doc --watch --configuration development",
+    "watch": "ng build ff-doc --watch",
     "test": "ng test %PROJECT_NAME%",
     "test:playground": "ng test angular-library-playground"
   },

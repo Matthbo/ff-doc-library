@@ -99,11 +99,19 @@ export default [
   eslintPluginUnicorn.configs.recommended,
   {
     rules: {
-      'unicorn/prevent-abbreviations': 'off',
+      'unicorn/prevent-abbreviations': [
+        'warn',
+        {
+          replacements: {
+            doc: false,
+          },
+        },
+      ],
       'unicorn/no-array-reduce': 'off',
       'unicorn/prefer-ternary': 'warn',
       'unicorn/no-null': 'off',
       'unicorn/prefer-dom-node-text-content': 'warn',
+      'unicorn/consistent-function-scoping': ['error', { checkArrowFunctions: false }],
     },
   },
   eslintPluginPrettierRecommended,

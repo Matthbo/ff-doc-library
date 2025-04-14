@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { FrankDoc, RawFrankDoc, Element } from './frankdoc.types';
-import { signal, WritableSignal } from '@angular/core';
-import { Label } from 'ff-doc';
+import { FrankDoc, RawFrankDoc, Element, Label } from './frankdoc.types';
+import { computed, Signal, signal, WritableSignal } from '@angular/core';
 
 export type Filter = {
   name: string;
@@ -15,20 +14,42 @@ export type FilterLabels = {
 };
 
 export class FFDoc {
-  private readonly frankDoc: WritableSignal<FrankDoc | null> = signal(null);
-  private readonly rawFrankDoc: WritableSignal<RawFrankDoc | null> = signal(null);
-  private readonly filters: WritableSignal<Filter[]> = signal([]);
+  public readonly elements: Signal<FrankDoc['elements']> = computed(() => this.frankDoc()?.elements ?? {});
+  public readonly enums: Signal<FrankDoc['enums']> = computed(() => this.frankDoc()?.enums ?? []);
+  public readonly properties: Signal<FrankDoc['properties']> = computed(() => this.frankDoc()?.properties ?? []);
+  public readonly credentialProviders: Signal<FrankDoc['credentialProviders']> = computed(
+    () => this.frankDoc()?.credentialProviders ?? [],
+  );
+  public readonly servletAuthenticators: Signal<FrankDoc['servletAuthenticators']> = computed(
+    () => this.frankDoc()?.servletAuthenticators ?? [],
+  );
+
+  private readonly _rawFrankDoc: WritableSignal<RawFrankDoc | null> = signal(null);
+  private readonly _frankDoc: WritableSignal<FrankDoc | null> = signal(null);
+  private readonly _filters: WritableSignal<Filter[]> = signal([]);
 
   constructor(
     private readonly jsonUrl: string,
     private readonly http: HttpClient,
   ) {}
 
+  get frankDoc(): Signal<FrankDoc | null> {
+    return this._frankDoc.asReadonly();
+  }
+
+  get rawFrankDoc(): Signal<RawFrankDoc | null> {
+    return this._rawFrankDoc.asReadonly();
+  }
+
+  get filters(): Signal<Filter[]> {
+    return this._filters.asReadonly();
+  }
+
   initialize(): void {
     this.fetchJson().subscribe((rawFrankDoc) => {
-      this.rawFrankDoc.set(rawFrankDoc);
+      this._rawFrankDoc.set(rawFrankDoc);
       const frankDoc = this.processFrankDoc(rawFrankDoc);
-      this.frankDoc.set(frankDoc);
+      this._frankDoc.set(frankDoc);
 
       const filters = this.getFiltersFromLabels(frankDoc.labels);
       this.assignFrankDocElementsToFilters(filters, frankDoc.elements);
