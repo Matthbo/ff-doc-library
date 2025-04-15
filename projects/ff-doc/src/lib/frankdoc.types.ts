@@ -23,9 +23,9 @@ type ElementBase = {
   parent?: string;
   attributes?: Attribute[];
   children?: Child[];
-  forwards?: ParsedTag[];
+  forwards?: ElementProperty[];
   deprecated?: DeprecationInfo;
-  parameters?: ParsedTag[];
+  parameters?: ElementProperty[];
   parametersDescription?: string;
   notes?: Note[];
   links?: Link[];
@@ -64,7 +64,7 @@ export type Child = {
   mandatory?: boolean;
 };
 
-export type ParsedTag = {
+export type ElementProperty = {
   name: string;
   description?: string;
 };
