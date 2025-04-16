@@ -1,4 +1,4 @@
-import { Element, FrankDoc, Attribute, ElementProperty, Enum } from './frankdoc.types';
+import { Element, FrankDoc, Attribute, ElementProperty, Enum, Label } from './frankdoc.types';
 
 function filterUsedEnums(attributes: Attribute[], enums: Enum[]): FrankDoc['enums'] {
   const filteredEnums = new Set<FrankDoc['enums'][0]>();
@@ -36,6 +36,18 @@ export function getElementByName(name: string, elements: FrankDoc['elements']): 
 
 export function getElementByClassName(className: string, elements: FrankDoc['elements']): Element | null {
   return Object.values(elements).find((element) => element.className === className) ?? null;
+}
+
+export function getElementByLabel(
+  labelGroup: string,
+  label: string,
+  name: string,
+  elements: FrankDoc['elements'],
+): Element | null {
+  return (
+    Object.values(elements).find((element) => element.name === name && element.labels?.[labelGroup]?.includes(label)) ??
+    null
+  );
 }
 
 export function getInheritedProperties(
@@ -93,10 +105,6 @@ export function getElementWithInheritedProperties(
   };
 }
 
-export function getElementLabels(element: Element): string[] {
-  // TODO
-}
-
-export function getLabelsByGroup(group: string): string[] {
-  // TODO
+export function getLabelsByGroup(groupName: string, labels: Label[]): string[] {
+  return labels.find((label) => label.label === groupName)?.values ?? [];
 }

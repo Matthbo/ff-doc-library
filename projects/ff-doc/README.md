@@ -4,12 +4,12 @@ Functionality:
 - [x] Get Elements
   - [x] By unique name/identifier (in ff doc frontend used as key: `${classname}.${name}`)
   - [x] By class name (list of elements falling under class name?)
-  - [ ] Inheritance (parent element properties)
+  - [x] Inheritance (parent element properties)
+  - [x] By label
 - [x] Get labels
-  - [ ] By label group
-  - [ ] Per element
+  - [x] By label group
 - [x] Get Enums
-  - [ ] Lookup when element property uses as type
+  - [x] Lookup when element property uses as type
 - [x] Get Properties (AppConstants)
 - [x] Get Credential Providers
 - [x] Get Servlet Authenticators
