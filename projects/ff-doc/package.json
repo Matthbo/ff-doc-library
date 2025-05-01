@@ -11,7 +11,8 @@
     "url": "",
     "directory": "projects/ff-doc"
   },
-  "peerDependencies": {
-    "@angular/core": "^19.0.0"
+  "optionalDependencies": {
+    "@angular/core": "^19.0.0",
+    "react": "^19.0.0"
   }
 }
