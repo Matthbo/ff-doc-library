@@ -1,50 +1,48 @@
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { FrankDoc, RawFrankDoc } from '../frankdoc.types';
 import { computed, inject, Signal, signal, WritableSignal } from '@angular/core';
-import { AbstractFFDoc, Filter } from '../abstract-ff-doc';
+import { Elements, FFDocBase, Filters } from '../ff-doc-base';
+import { FFDocJson } from '../frankdoc.types';
 
-export class NgFFDoc extends AbstractFFDoc {
-  public readonly elements: Signal<FrankDoc['elements']> = computed(() => this.frankDoc()?.elements ?? {});
-  public readonly enums: Signal<FrankDoc['enums']> = computed(() => this.frankDoc()?.enums ?? []);
-  public readonly properties: Signal<FrankDoc['properties']> = computed(() => this.frankDoc()?.properties ?? []);
-  public readonly credentialProviders: Signal<FrankDoc['credentialProviders']> = computed(
-    () => this.frankDoc()?.credentialProviders ?? [],
+export class NgFFDoc extends FFDocBase {
+  public readonly enums: Signal<FFDocJson['enums']> = computed(() => this.ffDoc()?.enums ?? {});
+  public readonly properties: Signal<FFDocJson['properties']> = computed(() => this.ffDoc()?.properties ?? []);
+  public readonly credentialProviders: Signal<FFDocJson['credentialProviders']> = computed(
+    () => this.ffDoc()?.credentialProviders ?? {},
   );
-  public readonly servletAuthenticators: Signal<FrankDoc['servletAuthenticators']> = computed(
-    () => this.frankDoc()?.servletAuthenticators ?? [],
+  public readonly servletAuthenticators: Signal<FFDocJson['servletAuthenticators']> = computed(
+    () => this.ffDoc()?.servletAuthenticators ?? {},
   );
 
-  private readonly _rawFrankDoc: WritableSignal<RawFrankDoc | null> = signal(null);
-  private readonly _frankDoc: WritableSignal<FrankDoc | null> = signal(null);
-  private readonly _filters: WritableSignal<Filter[]> = signal([]);
+  private readonly _ffDoc: WritableSignal<FFDocJson | null> = signal(null);
+  private readonly _elements: WritableSignal<Elements | null> = signal(null);
+  private readonly _filters: WritableSignal<Filters> = signal({});
 
   private readonly http: HttpClient = inject(HttpClient);
 
-  get frankDoc(): Signal<FrankDoc | null> {
-    return this._frankDoc.asReadonly();
+  get ffDoc(): Signal<FFDocJson | null> {
+    return this._ffDoc.asReadonly();
   }
 
-  get rawFrankDoc(): Signal<RawFrankDoc | null> {
-    return this._rawFrankDoc.asReadonly();
+  get elements(): Signal<Elements | null> {
+    return this._elements.asReadonly();
   }
 
-  get filters(): Signal<Filter[]> {
+  get filters(): Signal<Filters> {
     return this._filters.asReadonly();
   }
 
   initialize(jsonUrl: string): void {
-    this.fetchJson(jsonUrl).subscribe((rawFrankDoc) => {
-      this._rawFrankDoc.set(rawFrankDoc);
-      const frankDoc = this.processFrankDoc(rawFrankDoc);
-      this._frankDoc.set(frankDoc);
-
-      const filters = this.getFiltersFromLabels(frankDoc.labels);
-      this.assignFrankDocElementsToFilters(filters, frankDoc.elements);
+    this.fetchJson(jsonUrl).subscribe((ffDocJson) => {
+      this._ffDoc.set(ffDocJson);
+      this._elements.set(this.getElementsWithClassInfo(ffDocJson));
+      this._filters.set(
+        this.assignFrankDocElementsToFilters(this.getFiltersFromLabels(ffDocJson.labels), ffDocJson.elementNames),
+      );
     });
   }
 
-  private fetchJson(url: string): Observable<RawFrankDoc> {
-    return this.http.get<RawFrankDoc>(url);
+  private fetchJson(url: string): Observable<FFDocJson> {
+    return this.http.get<FFDocJson>(url);
   }
 }

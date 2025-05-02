@@ -1,36 +1,34 @@
-import { FrankDoc, RawFrankDoc } from './frankdoc.types';
-import { AbstractFFDoc, Filter } from './abstract-ff-doc';
+import { FFDocJson } from './frankdoc.types';
+import { Elements, FFDocBase, Filters } from './ff-doc-base';
 
-export class FFDoc extends AbstractFFDoc {
-  private _rawFrankDoc: RawFrankDoc | null = null;
-  private _frankDoc: FrankDoc | null = null;
-  private _filters: Filter[] = [];
+export class FFDoc extends FFDocBase {
+  private _ffDoc: FFDocJson | null = null;
+  private _elements: Elements | null = null;
+  private _filters: Filters = {};
 
-  get frankDoc(): Readonly<FrankDoc | null> {
-    return this._frankDoc;
+  get ffDoc(): Readonly<FFDocJson | null> {
+    return this._ffDoc;
   }
 
-  get rawFrankDoc(): Readonly<RawFrankDoc | null> {
-    return this._rawFrankDoc;
+  get elements(): Readonly<Elements | null> {
+    return this._elements;
   }
 
-  get filters(): readonly Filter[] {
+  get filters(): Readonly<Filters> {
     return this._filters;
   }
 
-  initialize(jsonUrl: string): void {
-    this.fetchJson(jsonUrl).then((rawFrankDoc) => {
-      this._rawFrankDoc = rawFrankDoc;
-      const frankDoc = this.processFrankDoc(rawFrankDoc);
-      this._frankDoc = frankDoc;
-      this._filters = this.assignFrankDocElementsToFilters(
-        this.getFiltersFromLabels(frankDoc.labels),
-        frankDoc.elements,
-      );
-    });
+  async initialize(jsonUrl: string): Promise<void> {
+    const ffDocJson = await this.fetchJson(jsonUrl);
+    this._ffDoc = ffDocJson;
+    this._elements = this.getElementsWithClassInfo(ffDocJson);
+    this._filters = this.assignFrankDocElementsToFilters(
+      this.getFiltersFromLabels(ffDocJson.labels),
+      ffDocJson.elementNames,
+    );
   }
 
-  private async fetchJson(url: string): Promise<RawFrankDoc> {
+  private async fetchJson(url: string): Promise<FFDocJson> {
     const response = await fetch(url);
     return await response.json();
   }

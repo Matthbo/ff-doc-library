@@ -1,51 +1,41 @@
-type FrankDocBase = {
+export type FFDocJson = {
   metadata: Metadata;
-  types: TypeElement[];
-  enums: Enum[];
-  labels: Label[];
+  types: Record<string, string[]>;
+  elements: Record<string, ElementClass>;
+  elementNames: Record<string, ElementInfo>;
+  enums: Record<string, EnumValue>;
+  labels: Record<string, string[]>;
   properties: Property[];
-  credentialProviders: CredentialProvider[];
-  servletAuthenticators: ServletAuthenticator[];
+  credentialProviders: Record<string, CredentialProvider>;
+  servletAuthenticators: Record<string, ServletAuthenticator>;
 };
 
-export type FrankDoc = FrankDocBase & {
-  elements: Record<string, Element>;
+export type Metadata = {
+  version: string;
 };
 
-export type RawFrankDoc = FrankDocBase & {
-  elements: Record<string, RawElement>;
-};
-
-type ElementBase = {
+export type ElementClass = {
   name: string;
   abstract?: boolean;
+  deprecated?: DeprecationInfo;
   description?: string;
   parent?: string;
-  attributes?: Attribute[];
+  attributes?: Record<string, Attribute>;
   children?: Child[];
-  forwards?: ElementProperty[];
-  deprecated?: DeprecationInfo;
-  parameters?: ElementProperty[];
+  forwards?: Record<string, ElementProperty>;
+  parameters?: Record<string, ElementProperty>;
   parametersDescription?: string;
   notes?: Note[];
   links?: Link[];
 };
 
-export type Element = ElementBase & {
-  className: string;
-  labels?: ElementLabels; // maybe make this smarter and have key be based on Label (type) name
-};
-
-export type RawElement = ElementBase & {
-  fullName: string;
-  elementNames: {
-    name: string;
-    labels: ElementLabels;
-  }[];
+export type DeprecationInfo = {
+  forRemoval: boolean;
+  since?: string;
+  description?: string;
 };
 
 export type Attribute = {
-  name: string;
   mandatory?: boolean;
   describer?: string;
   description?: string;
@@ -65,46 +55,27 @@ export type Child = {
 };
 
 export type ElementProperty = {
-  name: string;
   description?: string;
 };
 
-export type ElementLabels = Record<string, string[]>;
-
-export type Enum = {
-  name: string;
-  values: Value[];
+export type Note = {
+  type: 'INFO' | 'WARNING' | 'DANGER' | 'TIP';
+  value: string;
 };
 
-export type Value = {
+export type Link = {
   label: string;
+  url: string;
+};
+
+export type ElementInfo = {
+  labels: Record<string, string>;
+  className: string;
+};
+
+export type EnumValue = {
   description?: string;
   deprecated?: boolean;
-};
-
-export type Group = {
-  name: string;
-  types: string[];
-};
-
-export type Metadata = {
-  version: string;
-};
-
-export type TypeElement = {
-  name: string;
-  members: string[];
-};
-
-export type DeprecationInfo = {
-  forRemoval: boolean;
-  since?: string;
-  description?: string;
-};
-
-export type Label = {
-  label: string;
-  values: string[];
 };
 
 export type Property = {
@@ -118,29 +89,15 @@ export type Property = {
 };
 
 export type CredentialProvider = {
-  name: string;
   fullName: string;
   description?: string;
 };
 
 export type ServletAuthenticator = {
-  name: string;
   fullName: string;
   description?: string;
-  methods?: Method[];
-};
-
-export type Note = {
-  type: 'INFO' | 'WARNING' | 'DANGER' | 'TIP';
-  value: string;
-};
-
-export type Link = {
-  label: string;
-  url: string;
-};
-
-export type Method = {
-  name: string;
-  description?: string;
+  methods?: {
+    name: string;
+    description?: string;
+  }[];
 };
