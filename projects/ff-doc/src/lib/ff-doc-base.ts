@@ -1,4 +1,5 @@
 import { ElementClass, ElementInfo, FFDocJson } from './frankdoc.types';
+import { getInheritedProperties } from './frankdoc.utilities';
 
 export type Filters = Record<string, FilterLabels>;
 export type FilterLabels = Record<string, string[]>;
@@ -31,10 +32,20 @@ export abstract class FFDocBase {
   }
 
   protected getElementsWithClassInfo(json: FFDocJson): Elements {
-    // TODO
+    const elements: Elements = {};
+    for (const [elementName, elementValue] of Object.entries(json.elementNames)) {
+      const elementClassData = json.elements[elementValue.className];
+      const element: ElementDetails = {
+        ...elementClassData,
+        labels: elementValue.labels,
+      };
+      elements[elementName] = this.addInheritedPropertiesToElement(element, json);
+    }
+    return elements;
   }
 
-  protected addInheritedPropertiesToElement(element: ElementDetails): ElementDetails {
-    // TODO
+  protected addInheritedPropertiesToElement(element: ElementDetails, json: FFDocJson): ElementDetails {
+    const inheritedProperties = getInheritedProperties(element, json.elements, json.enums);
+    // TODO: flatten inherited properties to element itself
   }
 }
