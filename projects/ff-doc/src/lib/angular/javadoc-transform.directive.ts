@@ -1,6 +1,6 @@
 import { Directive, inject, Input, OnChanges, TemplateRef, ViewContainerRef } from '@angular/core';
-import { FrankDoc } from '../frankdoc.types';
 import { getLinkData, LinkData } from '../javadoc';
+import { ElementClass } from '../frankdoc.types';
 
 export type TemplateContext = { $implicit: string };
 export type LinkTemplateContext = { $implicit: LinkData };
@@ -14,7 +14,7 @@ export type LinkTemplateContext = { $implicit: LinkData };
 })
 export class JavadocTransformDirective implements OnChanges {
   @Input({ required: true }) javadocTransformOf?: string;
-  @Input({ required: true }) javadocTransformElements!: FrankDoc['elements'] | null;
+  @Input({ required: true }) javadocTransformElements!: Record<string, ElementClass> | null;
   @Input() javadocTransformLink?: TemplateRef<LinkTemplateContext>;
   @Input() javadocTransformAsText = false;
 
@@ -59,15 +59,15 @@ export class JavadocTransformDirective implements OnChanges {
     if (this.javadocTransformLink) {
       value = value.replace(this.linkRegex, (_, captureGroup) => {
         const linkData = getLinkData(captureGroup, this.javadocTransformElements!);
-        if (typeof linkData === 'string') return linkData;
-        return `\\"${JSON.stringify(linkData)}\\"`;
+        if (linkData.href) return `\\"${JSON.stringify(linkData)}\\"`;
+        return linkData.text;
       });
       return value.split(String.raw`\"`);
     }
     value = value.replace(this.linkRegex, (_, captureGroup) => {
       const linkData = getLinkData(captureGroup, this.javadocTransformElements!);
-      if (typeof linkData === 'string') return linkData;
-      return this.defaultLinkTransformation(linkData);
+      if (linkData.href) return this.defaultLinkTransformation(linkData);
+      return linkData.text;
     });
 
     value = value.replaceAll(String.raw`\"`, '"');
@@ -80,8 +80,8 @@ export class JavadocTransformDirective implements OnChanges {
     value = value.replace(this.tagsRegex, '');
     value = value.replace(this.linkRegex, (_: string, captureGroup: string) => {
       const linkData = getLinkData(captureGroup, this.javadocTransformElements!);
-      if (typeof linkData === 'string') return linkData;
-      return `${linkData.text}(${linkData.href})`;
+      if (linkData.href) return `${linkData.text}(${linkData.href})`;
+      return linkData.text;
     });
     value = value.replaceAll(String.raw`\"`, '"');
     return [value];

@@ -1,8 +1,8 @@
-import { Element, FrankDoc } from './frankdoc.types';
+import { ElementClass } from './frankdoc.types';
 
-export type LinkData = { href: string; text: string };
+export type LinkData = { text: string; href?: string };
 
-export function getLinkData(captureGroup: string, elements: FrankDoc['elements']): LinkData | string {
+export function getLinkData(captureGroup: string, elements: Record<string, ElementClass>): LinkData {
   /* {@link PipeLineSession pipeLineSession} -> 'PipeLineSession pipeLineSession'
    * {@link IPipe#configure()} -> 'IPipe#configure()'
    * {@link #doPipe(Message, PipeLineSession) doPipe} -> '#doPipe(Message, PipeLineSession) doPipe'
@@ -13,15 +13,15 @@ export function getLinkData(captureGroup: string, elements: FrankDoc['elements']
     elementString = isMethod ? captureGroup.split('#')[0] : captureGroup;
 
   if (elementString === '') {
-    return getInternalMethodReference(captureGroup, hashPosition);
+    return { text: getInternalMethodReference(captureGroup, hashPosition) };
   }
 
   const elementParts = elementString.split(' '); //first part is the class name, 2nd part the written name
   const name = parseLinkName(elementParts, isMethod, captureGroup);
 
   const element = findElement(elements, elementParts[0]);
-  if (!element) return name;
-  return { href: `${element.className}.${element.name}`, text: name };
+  if (!element) return { text: name };
+  return { href: element.name, text: name };
 }
 
 export function getInternalMethodReference(captureGroup: string, hashPosition: number): string {
@@ -42,18 +42,11 @@ export function parseLinkName(elementParts: string[], isMethod: boolean, capture
   return elementName;
 }
 
-export function findElement(allElements: FrankDoc['elements'], simpleName: string): Element | null {
-  if (!allElements || Object.keys(allElements).length === 0) return null; //Cannot find anything if we have nothing to search in
-  for (const element in allElements) {
-    if (fullNameToSimpleName(element) === simpleName) {
-      return allElements[element];
-    }
-  }
+export function findElement(elements: Record<string, ElementClass>, simpleName: string): ElementClass | null {
+  if (Object.keys(elements).length === 0) return null;
+  const element = elements[simpleName];
+  if (element) return element;
 
   console.warn(`could not find element [${simpleName}]`);
   return null;
-}
-
-export function fullNameToSimpleName(fullName: string): string {
-  return fullName.slice(fullName.lastIndexOf('.') + 1);
 }
