@@ -21,7 +21,7 @@ export class FFDoc extends FFDocBase {
   async initialize(jsonUrl: string): Promise<void> {
     const ffDocJson = await this.fetchJson(jsonUrl);
     this._ffDoc = ffDocJson;
-    this._elements = this.getElementsWithClassInfo(ffDocJson);
+    this._elements = this.getXMLElements(ffDocJson);
     this._filters = this.assignFrankDocElementsToFilters(
       this.getFiltersFromLabels(ffDocJson.labels),
       ffDocJson.elementNames,

@@ -1,10 +1,10 @@
-import { ElementClass, ElementInfo, FFDocJson } from './frankdoc.types';
-import { getInheritedProperties } from './frankdoc.utilities';
+import { ElementInfo, FFDocJson } from './frankdoc.types';
+import { addInheritedPropertiesToElement, ElementClassWithInheritedProperties } from './frankdoc.utilities';
 
 export type Filters = Record<string, FilterLabels>;
 export type FilterLabels = Record<string, string[]>;
 export type Elements = Record<string, ElementDetails>;
-export type ElementDetails = ElementClass & {
+export type ElementDetails = ElementClassWithInheritedProperties & {
   labels: ElementInfo['labels'];
 };
 
@@ -31,21 +31,19 @@ export abstract class FFDocBase {
     return filters;
   }
 
-  protected getElementsWithClassInfo(json: FFDocJson): Elements {
+  protected getXMLElements(json: FFDocJson): Elements {
     const elements: Elements = {};
+
+    /* instead of looping over every xml element,
+     * maybe parent elements already processed should be used as cache in order to reduce the number of loops
+     */
     for (const [elementName, elementValue] of Object.entries(json.elementNames)) {
       const elementClassData = json.elements[elementValue.className];
-      const element: ElementDetails = {
-        ...elementClassData,
+      elements[elementName] = {
+        ...addInheritedPropertiesToElement(elementClassData, json.elements, json.enums),
         labels: elementValue.labels,
       };
-      elements[elementName] = this.addInheritedPropertiesToElement(element, json);
     }
     return elements;
-  }
-
-  protected addInheritedPropertiesToElement(element: ElementDetails, json: FFDocJson): ElementDetails {
-    const inheritedProperties = getInheritedProperties(element, json.elements, json.enums);
-    // TODO: flatten inherited properties to element itself
   }
 }

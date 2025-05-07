@@ -1,110 +1,126 @@
-import { Element, FrankDoc, Attribute, ElementProperty, Enum, Label } from './frankdoc.types';
-
-function filterUsedEnums(attributes: Attribute[], enums: Enum[]): FrankDoc['enums'] {
-  const filteredEnums = new Set<FrankDoc['enums'][0]>();
-  for (const attribute of attributes) {
-    if (attribute.enum) {
-      const enumType = enums.find((enumItem) => enumItem.name === attribute.enum);
-      if (enumType) filteredEnums.add(enumType);
-    }
-  }
-  return [...filteredEnums];
-}
+import { Attribute, ElementClass, ElementProperty, EnumValue, FFDocJson } from './frankdoc.types';
 
 export type InheritedParentElementProperties<T> = {
   parentElementName: string;
-  properties: T[];
+  properties: Record<string, T>;
+};
+
+type InheritedPropertiesExtras = {
+  enums: Record<string, EnumValue>;
+  parentElements: string[];
 };
 
 export type InheritedProperties = {
   attributesRequired: InheritedParentElementProperties<Attribute>[];
   attributesOptional: InheritedParentElementProperties<Attribute>[];
-  forwards: ElementProperty[];
-  enums: Enum[];
-};
+  forwards: Record<string, ElementProperty>;
+} & InheritedPropertiesExtras;
 
-/**
- * Gets an element by key (`${className}.${name}`)
- **/
-export function getElement(className: string, name: string, elements: FrankDoc['elements']): Element {
-  return elements[`${className}.${name}`];
+export type ElementClassWithInheritedProperties = ElementClass & InheritedPropertiesExtras;
+
+function filterUsedEnums(attributes: Record<string, Attribute>, enums: FFDocJson['enums']): Record<string, EnumValue> {
+  const filteredEnums: Record<string, EnumValue> = {};
+  for (const attribute of Object.values(attributes)) {
+    if (attribute.enum) {
+      const enumType = enums[attribute.enum];
+      if (enumType && !filteredEnums[attribute.enum]) filteredEnums[attribute.enum] = enumType;
+    }
+  }
+  return filteredEnums;
 }
 
-export function getElementByName(name: string, elements: FrankDoc['elements']): Element | null {
-  return Object.values(elements).find((element) => element.name === name) ?? null;
-}
-
-export function getElementByClassName(className: string, elements: FrankDoc['elements']): Element | null {
-  return Object.values(elements).find((element) => element.className === className) ?? null;
-}
-
-export function getElementByLabel(
+// eslint-disable-next-line sonarjs/no-commented-code
+/*export function getElementByLabel(
   labelGroup: string,
   label: string,
   name: string,
-  elements: FrankDoc['elements'],
-): Element | null {
+  elements: Elements,
+): ElementDetails | null {
   return (
     Object.values(elements).find((element) => element.name === name && element.labels?.[labelGroup]?.includes(label)) ??
     null
   );
-}
+}*/
 
 export function getInheritedProperties(
-  element: Element,
-  elements: FrankDoc['elements'],
-  enums: Enum[],
+  element: ElementClass,
+  elements: FFDocJson['elements'],
+  enums: FFDocJson['enums'],
 ): InheritedProperties {
   const initialInheritedProperties: InheritedProperties = {
     attributesRequired: [],
     attributesOptional: [],
-    forwards: [],
-    enums: [],
+    forwards: {},
+    enums: {},
+    parentElements: [],
   };
 
   if (!element.parent) return initialInheritedProperties;
-  const parentElement = getElementByClassName(element.parent, elements);
+  const parentElement = elements[element.parent];
   if (!parentElement) return initialInheritedProperties;
   const inheritedProperties = getInheritedProperties(parentElement, elements, enums);
+  inheritedProperties.parentElements.unshift(parentElement.name);
 
   if (parentElement.attributes) {
-    const attributesRequired = parentElement.attributes.filter((attribute) => attribute.mandatory === true);
-    const attributesOptional = parentElement.attributes.filter((attribute) => !attribute.mandatory);
-    if (attributesRequired.length > 0) {
+    // ES2024 has the Object.groupBy function which could make this a lot better
+    const { required: attributesRequired, optional: attributesOptional } = Object.entries(
+      parentElement.attributes,
+    ).reduce<{
+      required: Record<string, Attribute>;
+      optional: Record<string, Attribute>;
+    }>(
+      (collection, [name, attribute]) => {
+        collection[attribute.mandatory === true ? 'required' : 'optional'][name] = attribute;
+        return collection;
+      },
+      { required: {}, optional: {} },
+    );
+    if (Object.values(attributesRequired).length > 0) {
       inheritedProperties.attributesRequired.unshift({
         parentElementName: parentElement.name,
         properties: attributesRequired,
       });
     }
-    if (attributesOptional.length > 0) {
+    if (Object.values(attributesOptional).length > 0) {
       inheritedProperties.attributesOptional.unshift({
         parentElementName: parentElement.name,
         properties: attributesOptional,
       });
     }
-    inheritedProperties.enums.unshift(...filterUsedEnums(parentElement.attributes, enums));
+    inheritedProperties.enums = { ...inheritedProperties.enums, ...filterUsedEnums(parentElement.attributes, enums) };
   }
 
-  if (parentElement.forwards) {
-    inheritedProperties.forwards.push(...parentElement.forwards);
-  }
+  if (parentElement.forwards)
+    inheritedProperties.forwards = { ...inheritedProperties.forwards, ...parentElement.forwards };
 
   return inheritedProperties;
 }
 
-export function getElementWithInheritedProperties(
-  className: string,
-  name: string,
-  elements: FrankDoc['elements'],
-  enums: Enum[],
-): { element: Element; inheritedProperties: InheritedProperties } {
-  const element = getElement(className, name, elements);
+export function addInheritedPropertiesToElement(
+  element: ElementClass,
+  elements: FFDocJson['elements'],
+  enums: FFDocJson['enums'],
+): ElementClassWithInheritedProperties {
+  const inheritedProperties = getInheritedProperties(element, elements, enums);
   return {
-    element: element,
-    inheritedProperties: getInheritedProperties(element, elements, enums),
+    ...element,
+    parentElements: inheritedProperties.parentElements,
+    attributes: {
+      ...flattenInheritedParentElementProperties(inheritedProperties.attributesOptional),
+      ...flattenInheritedParentElementProperties(inheritedProperties.attributesRequired),
+      ...element.attributes,
+    },
+    forwards: { ...inheritedProperties.forwards, ...element.forwards },
+    enums: inheritedProperties.enums,
   };
 }
 
-export function getLabelsByGroup(groupName: string, labels: Label[]): string[] {
-  return labels.find((label) => label.label === groupName)?.values ?? [];
+export function flattenInheritedParentElementProperties<T>(
+  inheritedProperties: InheritedParentElementProperties<T>[],
+): Record<string, T> {
+  let flattenedProperties: Record<string, T> = {};
+  for (const inheritedProperty of inheritedProperties) {
+    flattenedProperties = { ...inheritedProperty.properties, ...flattenedProperties };
+  }
+  return flattenedProperties;
 }

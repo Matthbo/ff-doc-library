@@ -35,7 +35,7 @@ export class NgFFDoc extends FFDocBase {
   initialize(jsonUrl: string): void {
     this.fetchJson(jsonUrl).subscribe((ffDocJson) => {
       this._ffDoc.set(ffDocJson);
-      this._elements.set(this.getElementsWithClassInfo(ffDocJson));
+      this._elements.set(this.getXMLElements(ffDocJson));
       this._filters.set(
         this.assignFrankDocElementsToFilters(this.getFiltersFromLabels(ffDocJson.labels), ffDocJson.elementNames),
       );
