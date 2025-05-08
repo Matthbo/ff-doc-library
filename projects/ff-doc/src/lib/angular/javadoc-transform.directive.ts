@@ -13,10 +13,10 @@ export type LinkTemplateContext = { $implicit: LinkData };
   standalone: true,
 })
 export class JavadocTransformDirective implements OnChanges {
-  @Input({ required: true }) javadocTransformOf?: string;
-  @Input({ required: true }) javadocTransformElements!: Record<string, ElementClass> | null;
-  @Input() javadocTransformLink?: TemplateRef<LinkTemplateContext>;
-  @Input() javadocTransformAsText = false;
+  @Input({ required: true }) fdJavadocTransformOf?: string;
+  @Input({ required: true }) fdJavadocTransformElements!: Record<string, ElementClass> | null;
+  @Input() fdJavadocTransformLink?: TemplateRef<LinkTemplateContext>;
+  @Input() fdJavadocTransformAsText = false;
 
   private readonly templateRef: TemplateRef<TemplateContext> = inject(TemplateRef);
   private readonly viewContainerRef: ViewContainerRef = inject(ViewContainerRef);
@@ -27,18 +27,18 @@ export class JavadocTransformDirective implements OnChanges {
   private readonly linkRegex = /(?:{@link\s(.*?)})/g;
 
   ngOnChanges(): void {
-    if (this.javadocTransformOf === '') this.javadocTransformOf = '-';
-    if (!this.javadocTransformOf || !this.javadocTransformElements) return;
-    const javadocParts = this.javadocTransformAsText ? this.transformAsText() : this.transformAsHtml();
+    if (this.fdJavadocTransformOf === '') this.fdJavadocTransformOf = '-';
+    if (!this.fdJavadocTransformOf || !this.fdJavadocTransformElements) return;
+    const javadocParts = this.fdJavadocTransformAsText ? this.transformAsText() : this.transformAsHtml();
     this.viewContainerRef.clear();
 
     for (const partIndexString in javadocParts) {
       const partIndex = +partIndexString;
       const part = javadocParts[partIndex];
-      if (this.javadocTransformLink && partIndex % 2 !== 0 && part.startsWith('{')) {
+      if (this.fdJavadocTransformLink && partIndex % 2 !== 0 && part.startsWith('{')) {
         try {
           const linkData: LinkData = JSON.parse(part);
-          this.viewContainerRef.createEmbeddedView<LinkTemplateContext>(this.javadocTransformLink, {
+          this.viewContainerRef.createEmbeddedView<LinkTemplateContext>(this.fdJavadocTransformLink, {
             $implicit: linkData,
           });
         } catch (error) {
@@ -53,19 +53,19 @@ export class JavadocTransformDirective implements OnChanges {
   }
 
   transformAsHtml(): string[] {
-    let value = `${this.javadocTransformOf}`;
+    let value = `${this.fdJavadocTransformOf}`;
     value = value.replace(this.markdownLinkRegex, '<a target="_blank" href="$2" alt="$1">$1</a>');
 
-    if (this.javadocTransformLink) {
+    if (this.fdJavadocTransformLink) {
       value = value.replace(this.linkRegex, (_, captureGroup) => {
-        const linkData = getLinkData(captureGroup, this.javadocTransformElements!);
+        const linkData = getLinkData(captureGroup, this.fdJavadocTransformElements!);
         if (linkData.href) return `\\"${JSON.stringify(linkData)}\\"`;
         return linkData.text;
       });
       return value.split(String.raw`\"`);
     }
     value = value.replace(this.linkRegex, (_, captureGroup) => {
-      const linkData = getLinkData(captureGroup, this.javadocTransformElements!);
+      const linkData = getLinkData(captureGroup, this.fdJavadocTransformElements!);
       if (linkData.href) return this.defaultLinkTransformation(linkData);
       return linkData.text;
     });
@@ -75,11 +75,11 @@ export class JavadocTransformDirective implements OnChanges {
   }
 
   transformAsText(): string[] {
-    let value = `${this.javadocTransformOf}`;
+    let value = `${this.fdJavadocTransformOf}`;
     value = value.replace(this.markdownLinkRegex, '$1($2)');
     value = value.replace(this.tagsRegex, '');
     value = value.replace(this.linkRegex, (_: string, captureGroup: string) => {
-      const linkData = getLinkData(captureGroup, this.javadocTransformElements!);
+      const linkData = getLinkData(captureGroup, this.fdJavadocTransformElements!);
       if (linkData.href) return `${linkData.text}(${linkData.href})`;
       return linkData.text;
     });

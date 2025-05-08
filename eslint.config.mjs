@@ -26,6 +26,7 @@ export default [
       '@typescript-eslint': tsPlugin,
       '@angular-eslint': angularPlugin,
       prettier: prettierPlugin,
+      sonarjs,
     },
     rules: {
       // TypeScript: https://typescript-eslint.io/rules/
@@ -48,6 +49,11 @@ export default [
       // Prettier: https://github.com/prettier/eslint-config-prettier?tab=readme-ov-file#special-rules
       ...eslintConfigPrettier.rules,
       'prettier/prettier': 'warn',
+
+      // SonarJS: https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md
+      ...sonarjs.configs.recommended.rules,
+      'sonarjs/cognitive-complexity': 'error',
+      'sonarjs/no-duplicate-string': 'error',
     },
   },
   {
@@ -115,12 +121,4 @@ export default [
     },
   },
   eslintPluginPrettierRecommended,
-  // SonarJS: https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md
-  sonarjs.configs.recommended,
-  {
-    rules: {
-      'sonarjs/cognitive-complexity': 'error',
-      'sonarjs/no-duplicate-string': 'error',
-    },
-  },
 ];
