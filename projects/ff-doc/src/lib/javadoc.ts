@@ -2,6 +2,54 @@ import { ElementClass } from './frankdoc.types';
 
 export type LinkData = { text: string; href?: string };
 
+// eslint-disable-next-line sonarjs/slow-regex
+export const markdownLinkRegex = /\[([^\]]+)]\(([^)]+)\)/g; // old regex: /\[(.*?)\]\((.+?)\)/g
+export const tagsRegex = /<[^>]*>?/gm;
+export const linkRegex = /(?:{@link\s(.*?)})/g;
+
+export function transformAsHtml(
+  javadoc: string,
+  elements: Record<string, ElementClass>,
+  hasCustomLinkTransform: boolean,
+): string[] {
+  let value = `${javadoc}`;
+  value = value.replaceAll(markdownLinkRegex, '<a target="_blank" href="$2" alt="$1">$1</a>');
+
+  if (hasCustomLinkTransform) {
+    value = value.replaceAll(linkRegex, (_, captureGroup) => {
+      const linkData = getLinkData(captureGroup, elements);
+      if (linkData.href) return `\\"${JSON.stringify(linkData)}\\"`;
+      return linkData.text;
+    });
+    return value.split(String.raw`\"`);
+  }
+  value = value.replaceAll(linkRegex, (_, captureGroup) => {
+    const linkData = getLinkData(captureGroup, elements);
+    if (linkData.href) return defaultLinkTransformation(linkData);
+    return linkData.text;
+  });
+
+  value = value.replaceAll(String.raw`\"`, '"');
+  return [value];
+}
+
+export function transformAsText(javadoc: string, elements: Record<string, ElementClass>): string[] {
+  let value = `${javadoc}`;
+  value = value.replaceAll(markdownLinkRegex, '$1($2)');
+  value = value.replaceAll(tagsRegex, '');
+  value = value.replaceAll(linkRegex, (_: string, captureGroup: string) => {
+    const linkData = getLinkData(captureGroup, elements);
+    if (linkData.href) return `${linkData.text}(${linkData.href})`;
+    return linkData.text;
+  });
+  value = value.replaceAll(String.raw`\"`, '"');
+  return [value];
+}
+
+export function defaultLinkTransformation(linkData: LinkData): string {
+  return `<a href="#/${linkData.href}">${linkData.text}</a>`;
+}
+
 export function getLinkData(captureGroup: string, elements: Record<string, ElementClass>): LinkData {
   /* {@link PipeLineSession pipeLineSession} -> 'PipeLineSession pipeLineSession'
    * {@link IPipe#configure()} -> 'IPipe#configure()'

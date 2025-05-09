@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, ViewEncapsulation } from '@angular/core';
-import { useFFDoc } from 'ff-doc';
+import { useFFDoc, useJavadocTransform } from 'ff-doc';
 import React from 'react';
 import { createRoot, Root } from 'react-dom/client';
 
@@ -26,6 +26,7 @@ export class ReactImplementationComponent implements AfterViewInit, OnDestroy {
 
 function App() {
   const { elements } = useFFDoc('/assets/example-ffdoc.json')
+  const javadocTransform = useJavadocTransform();
 
   return (
     <>
@@ -33,7 +34,7 @@ function App() {
       {Object.entries(elements ?? {}).map(([elementName, element]) => (
         <section key={elementName}>
           <h3>{elementName}</h3>
-          <p>{element.description}</p>
+          <p dangerouslySetInnerHTML={javadocTransform(element.description ?? '', elements, true)}></p>
         </section>
       ))}
     </>
