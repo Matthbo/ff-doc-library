@@ -2,15 +2,6 @@ import { LinkData, transformAsHtml, transformAsText } from '../javadoc';
 import { ElementClass } from '../frankdoc.types';
 import { useMemo } from 'react';
 
-/* eslint-disable no-unused-vars */
-type JavadocTransformHook = (
-  javadoc: string | undefined,
-  elements: Record<string, ElementClass> | null,
-  asText: boolean,
-  linkTemplate?: (link: LinkData) => string,
-) => InnerHTML;
-/* eslint-enable no-unused-vars */
-
 type InnerHTML = {
   __html: string;
 };
@@ -48,12 +39,17 @@ function javadocTransform(
   return transformedResult;
 }
 
-export function useJavadocTransform(): JavadocTransformHook {
-  return (javadoc, elements, asText = true, linkTemplate): InnerHTML =>
-    useMemo(
-      (): InnerHTML => ({
-        __html: javadocTransform(javadoc, elements, asText, linkTemplate),
-      }),
-      [javadoc, elements, asText, linkTemplate],
-    );
+export function useJavadocTransform(
+  javadoc: string | undefined,
+  elements: Record<string, ElementClass> | null,
+  asText = true,
+  // eslint-disable-next-line no-unused-vars
+  linkTemplate?: (link: LinkData) => string,
+): InnerHTML {
+  return useMemo(
+    (): InnerHTML => ({
+      __html: javadocTransform(javadoc, elements, asText, linkTemplate),
+    }),
+    [javadoc, elements, asText, linkTemplate],
+  );
 }
