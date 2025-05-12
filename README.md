@@ -1,6 +1,6 @@
-# FF Doc Library
+# FF! Doc Library
 
-See [FF Doc readme](./projects/ff-doc/README.md)
+See [@frankframework/ff-doc readme](./projects/ff-doc/README.md)
 <!--
 # Angular Library Template
 
