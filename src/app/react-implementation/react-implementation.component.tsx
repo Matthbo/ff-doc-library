@@ -30,7 +30,7 @@ function App() {
   return (
     <>
       <h2>Elements</h2>
-      {Object.entries(elements ?? {}).map((elementEntry) => <ShowElement elementEntry={elementEntry} elements={elements!} />)}
+      {Object.entries(elements ?? {}).map((elementEntry) => <ShowElement key={elementEntry[0]} elementEntry={elementEntry} elements={elements!} />)}
     </>
   );
 }
@@ -39,7 +39,7 @@ function ShowElement({ elementEntry: [elementName, element], elements }: { eleme
   const description = useJavadocTransform(element.description ?? '', elements);
 
   return (
-    <section key={elementName}>
+    <section>
       <h3>{elementName}</h3>
       <p dangerouslySetInnerHTML={description}></p>
     </section>

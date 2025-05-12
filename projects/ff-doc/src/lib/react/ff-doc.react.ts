@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Elements, Filters } from '../ff-doc-base';
 import { FFDoc } from '../ff-doc';
 import { FFDocJson } from '../frankdoc.types';
@@ -15,11 +15,13 @@ export function useFFDoc(jsonUrl: string): FFDocHook {
   const [filters, setFilters] = useState<Filters>({});
   const ffDoc = new FFDoc();
 
-  ffDoc.initialize(jsonUrl).then(() => {
-    setFFDocJson(ffDoc.ffDoc);
-    setFilters(ffDoc.filters);
-    setElements(ffDoc.elements);
-  });
+  useEffect(() => {
+    ffDoc.initialize(jsonUrl).then(() => {
+      setFFDocJson(ffDoc.ffDoc);
+      setFilters(ffDoc.filters);
+      setElements(ffDoc.elements);
+    });
+  }, [jsonUrl]);
 
   return {
     ffDoc: ffDocJson,
