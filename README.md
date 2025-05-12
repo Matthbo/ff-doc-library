@@ -1,5 +1,7 @@
 # FF! Doc Library
 
+![frank-framework-github-banner](banner.png)
+
 See [@frankframework/ff-doc readme](./projects/ff-doc/README.md)
 <!--
 # Angular Library Template
